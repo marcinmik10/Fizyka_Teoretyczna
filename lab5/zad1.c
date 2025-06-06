@@ -39,7 +39,7 @@ void apply_boundary_conditions() {
     }
 
     // Obszar 4
-    for (int i = 1; i < N; i++) {
+    for (int i = 1; i < N-1; i++) {
         V[i][M] = V[i][M - 1];
     }
 
@@ -56,20 +56,20 @@ void apply_boundary_conditions() {
 
 void relax() {
     for (int iter = 0; iter < ITMAX; iter++) {
-        for (int j = 1; j < M; j++) {
-            for (int i = 1; i < N; i++) {
+        for (int j = 1; j < M; j++) {//j=1
+            for (int i = 1; i < N; i++) {//i=1
                 double rhoi = i * D_RHO;
 
                 double term_rho2 = (V[i + 1][j] + V[i - 1][j]) / (D_RHO * D_RHO);
                 double term_rho = (V[i + 1][j] - V[i - 1][j]) / (2.0 * D_RHO * rhoi);
                 double term_z2 = (V[i][j + 1] + V[i][j - 1]) / (D_Z * D_Z);
 
-                V[i][j] = (term_rho2 + term_rho + term_z2) /
-                          (2.0 / (D_RHO * D_RHO) + 2.0 / (D_Z * D_Z));
+                V[i][j] = (term_rho2 + term_rho + term_z2) /(2.0 / (D_RHO * D_RHO) + 2.0 / (D_Z * D_Z));
+                // apply_boundary_conditions(); // Odśwież warunki brzegowe po każdej iteracji
+
             }
         }
-
-        apply_boundary_conditions(); // Odśwież warunki brzegowe po każdej iteracji
+        // apply_boundary_conditions(); // Odśwież warunki brzegowe po każdej iteracji
     }
 }
 
