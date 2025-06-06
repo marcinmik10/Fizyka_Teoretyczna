@@ -1,0 +1,10 @@
+# ignore all logs
+*.log
+#vscode files
+/.vscode
+#build
+/build
+#test directory
+/test
+#.dat
+*.dat
