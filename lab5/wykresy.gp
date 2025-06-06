@@ -20,7 +20,7 @@ set pm3d interpolate 2,2
 set palette rgb 33,13,10
 splot "potential.dat" using 1:2:3 with pm3d notitle
 
-############################
+############################ ###szpic w rogu - coś z indeksami
 # 2. Mapa 3D (izometryczna)
 ############################
 set output "mapa_3D.png"
@@ -32,14 +32,6 @@ splot "potential.dat" using 1:2:3 with pm3d notitle
 ############################
 # 3. Przekrój wzdłuż osi symetrii ρ=0 → V(0, z)
 ############################
-# Tworzymy pomocniczy plik z przekrojem
-set output
-set print "V_rho0.dat"
-do for [j=0:150] {
-    print 0, j*0.1, system(sprintf("awk '$1==0.0 && $2==%.1f {print $3}' potential.dat", j*0.1))
-}
-unset print
-
 set output "przekroj_rho0.png"
 set title "Przekrój V(0, z) + parabola"
 set xlabel "z [cm]"
@@ -54,12 +46,6 @@ plot "V_rho0.dat" using 2:3 with points pt 7 lc rgb "blue" title "V(0,z)", \
 # 4. Przekrój wzdłuż z = (j1+j2)/2 * dz = (60+90)/2 * 0.1 = 7.5 cm
 # czyli dla z = 7.5 → fix tolerancję porównania
 ############################
-set print "V_zp.dat"
-do for [i=0:30] {
-    print i*0.1, 7.5, system(sprintf("awk '$2==7.5 && $1==%.1f {print $3}' potential.dat", i*0.1))
-}
-unset print
-
 set output "przekroj_zp.png"
 set title "Przekrój V(ρ, z=7.5) + parabola"
 set xlabel "ρ [cm]"
