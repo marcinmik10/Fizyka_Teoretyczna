@@ -90,41 +90,53 @@ void save_to_file(const char *filename) {
     fclose(fp);
 }
 
-void zapiszPrzekroje(double** V, int n, int m, int j1, int j2, double delta) {
-    // Otwieramy plik dla przekroju V(0,z) (osi symetrii)
-    std::ofstream file_rho0("V_rho0.dat");
-    file_rho0 << std::fixed << std::setprecision(6);
-    int i_rho0 = 0; // i=0 - oś symetrii
-
-    for (int j = 0; j <= m; ++j) {
-        double rho = i_rho0 * delta;
-        double z = j * delta;
-        double val = V[i_rho0][j];
-        file_rho0 << rho << " " << z << " " << val << "\n";
+void zapisz_przekroje() {
+    FILE *f_rho0 = fopen("V_rho0.dat", "w");
+    FILE *f_zp = fopen("V_zp.dat", "w");
+    if (!f_rho0 || !f_zp) {
+        printf("Blad otwarcia pliku do zapisu!\n");
+        return;
     }
-    file_rho0.close();
+    double drho = D_RHO; // krok w kierunku ρ
+    double dz = D_Z; // krok w kierunku z
+    int n=N;
+    int m=M;
+    int j1 = J1; // granica lewego cylindra
+    int j2 = J2; // granica prawego cylindra
 
-    // Otwieramy plik dla przekroju V(rho, zp), gdzie zp = ((j1+j2)/2)*delta
-    std::ofstream file_zp("V_zp.dat");
-    file_zp << std::fixed << std::setprecision(6);
-
-    int j_zp = (j1 + j2) / 2;  // indeks w osi z odpowiadający zp
-    double zp = j_zp * delta;
-
-    for (int i = 0; i <= n; ++i) {
-        double rho = i * delta;
-        double val = V[i][j_zp];
-        file_zp << rho << " " << zp << " " << val << "\n";
+    // 1) Zapis przekroju dla rho=0 (i=0) -> wszystkie j od 0 do m
+    for (int j = 0; j <= m; j++) {
+        double z = j * dz;
+        double V_val = V[0][j];  // rho=0, index i=0
+        fprintf(f_rho0, "%g %g %g\n", 0.0, z, V_val);
     }
-    file_zp.close();
+
+    // 2) Zapis przekroju dla z = zp = ((j1+j2)/2)*dz = 7.5
+    // Znajdujemy indeks j_p najbliższy 7.5
+    double zp = ((j1 + j2) / 2.0) * dz;
+
+    int j_p = (int) round(zp / dz);
+    if (j_p > m) j_p = m;  // na wszelki wypadek
+
+    for (int i = 0; i <= n; i++) {
+        double rho = i * drho;
+        double V_val = V[i][j_p];
+        fprintf(f_zp, "%g %g %g\n", rho, zp, V_val);
+    }
+
+    fclose(f_rho0);
+    fclose(f_zp);
+
+    printf("Pliki V_rho0.dat i V_zp.dat zostaly zapisane.\n");
 }
+
 
 int main() {
     initialize_grid();
     apply_boundary_conditions();
     relax();
     save_to_file("potential.dat");
-
+    zapisz_przekroje();
     printf("Symulacja zakończona. Wyniki zapisano w pliku potential.dat\n");
     return 0;
 }
