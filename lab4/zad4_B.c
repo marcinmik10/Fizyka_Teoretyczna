@@ -16,8 +16,23 @@ void pochodne(double t, double *s, double *dsdt, double alpha) {
     dsdt[0] = 0.0;
     dsdt[N] = 0.0;
 
-    for (i = 1; i < N; i++)
-        dsdt[N+1 + i] = (alpha / MASS) * (s[i-1] - 2*s[i] + s[i+1]);
+
+
+
+    // for (i = 1; i < N; i++)
+    //     dsdt[N+1 + i] = (alpha / MASS) * (s[i-1] - 2*s[i] + s[i+1]);
+
+    double omega_n = 2.0 * sqrt(ALPHA / MASS) * sin(0.9 * M_PI / (2.0 * (N+1))); // wzór 11 dla n=0.9
+    double A = 0.1;  // amplituda wymuszenia
+
+    for(i = 1; i < N; i++) {
+        double F = 0.0;
+        if (i == 1) {
+            F = A * cos(omega_n * t);  // tylko atom m = 1
+        }
+        dsdt[N+1 + i] = (ALPHA / MASS) * (s[i-1] - 2*s[i] + s[i+1]) + F / MASS;
+    }
+
 
     dsdt[N+1] = 0.0;
     dsdt[2*N+1] = 0.0;
@@ -68,7 +83,7 @@ int main() {
         for (int t_step = 0; t_step <= NT; t_step++) {
             double t = t_step * DT;
             for (int i = 0; i <= N; i++)
-                fprintf(f, "%g\t%g\t%g\n", i*DELTA, t, s[i]);
+            fprintf(f, "%g\t%g\t%g\n", i*DELTA, t, s[i]);
             fprintf(f, "\n"); // separator do Gnuplota
 
             rk4_step(s, t, DT, s_new, alpha);

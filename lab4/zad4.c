@@ -28,6 +28,7 @@ void pochodne(double t, double *s, double *dsdt) {
         dsdt[N+1 + i] = (ALPHA / MASS) * (s[i-1] - 2*s[i] + s[i+1]);
     }
 
+
     // warunki brzegowe - atomy na końcach nieruchome
     dsdt[0] = 0.0;
     dsdt[N] = 0.0;
