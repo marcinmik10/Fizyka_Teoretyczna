@@ -52,6 +52,10 @@ void initialize_grid() {
 //     for (int j = 1; j < M; j++) {
 //         V[0][j] = V[1][j];
 //     }
+//     V[0][0] = V[1][1];
+//     V[0][M] = V[1][M-1];
+//     V[N][0] = V[N-1][1];
+//     V[N][M] = V[N-1][M-1];
 // }
 
 void apply_boundary_conditions() {
@@ -119,33 +123,11 @@ void save_to_file(const char *filename) {
         }
         fprintf(fp, "\n"); // pusta linia do oddzielenia warstw
     }
-    
-    // for (int j = 0; j <= M; j++) {
-    //     for (int i = 0; i <= N; i++) {
-    //         fprintf(fp, "%lf %lf %lf\n", i * D_RHO, j * D_Z, V[i][j]);
-    //     }
-    //     fprintf(fp, "\n"); // pusta linia do oddzielenia warstw
-    // }
+
 
     fclose(fp);
 }
 
-// void save_to_file(const char *filename) {
-//     FILE *fp = fopen(filename, "w");
-//     if (!fp) {
-//         perror("Błąd otwarcia pliku");
-//         exit(1);
-//     }
-
-//     for (int i = 0; i <= N; i++) {  // stałe ρ
-//         for (int j = 0; j <= M; j++) {  // zmienne z
-//             fprintf(fp, "%lf %lf %lf\n", i * D_RHO, j * D_Z, V[i][j]);
-//         }
-//         fprintf(fp, "\n"); // pusta linia po każdej kolumnie ρ=const
-//     }
-
-//     fclose(fp);
-// }
 
 
 void zapisz_przekroje() {
