@@ -22,36 +22,69 @@ void initialize_grid() {
     }
 }
 
+// void apply_boundary_conditions() {
+//     // Obszar 1
+//     for (int j = 0; j <= J1; j++) {
+//         V[N][j] = V0;
+//     }
+
+//     // Obszar 2
+//     for (int j = J1 + 1; j <= J2; j++) {
+//         V[N][j] = 0.0;
+//     }
+
+//     // Obszar 3
+//     for (int j = J2 + 1; j <= M; j++) {
+//         V[N][j] = V0;
+//     }
+
+//     // Obszar 4
+//     for (int i = 1; i < N-1; i++) {
+//         V[i][M] = V[i][M - 1];
+//     }
+
+//     // Obszar 5
+//     for (int i = 1; i < N; i++) {
+//         V[i][0] = V[i][1];
+//     }
+
+//     // Obszar 6
+//     for (int j = 1; j < M; j++) {
+//         V[0][j] = V[1][j];
+//     }
+// }
+
 void apply_boundary_conditions() {
-    // Obszar 1
-    for (int j = 0; j <= J1; j++) {
-        V[N][j] = V0;
+    // Elektrody jako pasy przy rho = max (i=N)
+    for (int i = N-2; i <= N; i++) {
+        for (int j = 0; j <= J1; j++)
+            V[i][j] = V0;
+        for (int j = J1 + 1; j <= J2; j++)
+            V[i][j] = 0.0;
+        for (int j = J2 + 1; j <= M; j++)
+            V[i][j] = V0;
     }
 
-    // Obszar 2
-    for (int j = J1 + 1; j <= J2; j++) {
-        V[N][j] = 0.0;
-    }
-
-    // Obszar 3
-    for (int j = J2 + 1; j <= M; j++) {
-        V[N][j] = V0;
-    }
-
-    // Obszar 4
-    for (int i = 1; i < N-1; i++) {
-        V[i][M] = V[i][M - 1];
-    }
-
-    // Obszar 5
-    for (int i = 1; i < N; i++) {
+    // Dolna granica z = 0 (pochodna zerowa)
+    for (int i = 0; i <= N; i++) {
         V[i][0] = V[i][1];
     }
 
-    // Obszar 6
-    for (int j = 1; j < M; j++) {
+    // Górna granica z = M (pochodna zerowa)
+    for (int i = 0; i <= N; i++) {
+        V[i][M] = V[i][M - 1];
+    }
+
+    // Oś symetrii rho = 0
+    for (int j = 0; j <= M; j++) {
         V[0][j] = V[1][j];
     }
+
+    // Rogi – bezpieczna inicjalizacja
+    V[0][0] = V[1][1];
+    V[0][M] = V[1][M-1];
+    V[N][0] = V[N-1][1];
+    V[N][M] = V[N-1][M-1];
 }
 
 void relax() {
@@ -69,7 +102,7 @@ void relax() {
 
             }
         }
-        // apply_boundary_conditions(); // Odśwież warunki brzegowe po każdej iteracji
+        apply_boundary_conditions(); // Odśwież warunki brzegowe po każdej iteracji
     }
 }
 
@@ -86,9 +119,34 @@ void save_to_file(const char *filename) {
         }
         fprintf(fp, "\n"); // pusta linia do oddzielenia warstw
     }
+    
+    // for (int j = 0; j <= M; j++) {
+    //     for (int i = 0; i <= N; i++) {
+    //         fprintf(fp, "%lf %lf %lf\n", i * D_RHO, j * D_Z, V[i][j]);
+    //     }
+    //     fprintf(fp, "\n"); // pusta linia do oddzielenia warstw
+    // }
 
     fclose(fp);
 }
+
+// void save_to_file(const char *filename) {
+//     FILE *fp = fopen(filename, "w");
+//     if (!fp) {
+//         perror("Błąd otwarcia pliku");
+//         exit(1);
+//     }
+
+//     for (int i = 0; i <= N; i++) {  // stałe ρ
+//         for (int j = 0; j <= M; j++) {  // zmienne z
+//             fprintf(fp, "%lf %lf %lf\n", i * D_RHO, j * D_Z, V[i][j]);
+//         }
+//         fprintf(fp, "\n"); // pusta linia po każdej kolumnie ρ=const
+//     }
+
+//     fclose(fp);
+// }
+
 
 void zapisz_przekroje() {
     FILE *f_rho0 = fopen("V_rho0.dat", "w");

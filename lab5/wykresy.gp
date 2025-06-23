@@ -14,11 +14,33 @@ set datafile separator whitespace
 ############################
 set output "mapa_2D.png"
 set title "Mapa 2D potencjału V(ρ,z)"
-unset surface
+#unset surface
+#set view map
+#set pm3d interpolate 2,2
+#set palette rgb 33,13,10
+#splot "potential.dat" using 1:2:3 with pm3d notitle
+
+#set pm3d map
+#set view map
+#set xlabel "ρ"
+#set ylabel "z"
+#set title "Mapa potencjału V(ρ, z)"
+#set palette rgbformulae 22,13,-31  # klasyczna paleta
+
+set terminal pngcairo size 800,600 enhanced font 'Verdana,10'
+set output "mapa_2D.png"
+
+set pm3d map
 set view map
-set pm3d interpolate 2,2
-set palette rgb 33,13,10
+set xlabel "ρ"
+set ylabel "z"
+set title "Mapa potencjału V(ρ, z)"
+set palette rgbformulae 22,13,-31  # klasyczna paleta
 splot "potential.dat" using 1:2:3 with pm3d notitle
+
+
+
+
 
 ############################ ###szpic w rogu - coś z indeksami
 # 2. Mapa 3D (izometryczna)
