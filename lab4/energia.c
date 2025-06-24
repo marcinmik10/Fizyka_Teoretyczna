@@ -28,7 +28,6 @@ void pochodne(double t, double *s, double *dsdt) {
         dsdt[N+1 + i] = (ALPHA / MASS) * (s[i-1] - 2*s[i] + s[i+1]);
     }
 
-
     // warunki brzegowe - atomy na końcach nieruchome
     dsdt[0] = 0.0;
     dsdt[N] = 0.0;
@@ -56,8 +55,6 @@ double energia_kinetyczna(double *s) {
     double T = 0.0;
     int i;
     for(i = 0; i <= N; i++) {
-    // for(i = 0; i <N; i++) {
-
         double vi = s[N+1 + i];
         T += 0.5 * MASS * vi * vi;
     }
@@ -86,11 +83,6 @@ int main() {
         perror("Nie można otworzyć pliku");
         return 1;
     }
-    FILE *f_e = fopen("energy_gauss.dat", "w");
-    if (!f_e) {
-        perror("Nie można otworzyć pliku");
-        return 1;
-    }
 
     // Warunki początkowe:
     // xi,0 = DELTA * i (położenia równowagi)
@@ -114,12 +106,12 @@ int main() {
         fprintf(f, "\n"); // oddzielenie ramek czasowych pustą linią
 
         // Można też zapisywać energie do osobnych plików lub ekran - tutaj np. do stdout co 100 kroków
-    
-        double T = energia_kinetyczna(s);
-        double U = energia_potencjalna(s);
-        double E = T + U;
-        fprintf(f_e,"%.2f %.5f %.5f %.5f\n", t, T, U, E);
-
+        if(step % 100 == 0) {
+            double T = energia_kinetyczna(s);
+            double U = energia_potencjalna(s);
+            double E = T + U;
+            printf("t=%.2f T=%.5f U=%.5f E=%.5f\n", t, T, U, E);
+        }
 
         // RK4 krok
         rk4_vec(t, DT, M, s, pochodne);
@@ -127,10 +119,8 @@ int main() {
     }
 
     fclose(f);
-    fclose(f_e);
-
-    // printf("Symulacja zakonczona. Dane zapisane w 'x_gauss.dat'\n");
-    // printf("Mozna rysowac mapa wychyleń w funkcji czasu wg podanego wczesniej skryptu Gnuplota.\n");
+    printf("Symulacja zakonczona. Dane zapisane w 'x_gauss.dat'\n");
+    printf("Mozna rysowac mapa wychyleń w funkcji czasu wg podanego wczesniej skryptu Gnuplota.\n");
 
     return 0;
 }
